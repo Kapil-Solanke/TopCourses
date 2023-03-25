@@ -1,0 +1,61 @@
+import React, { useEffect, useState } from "react";
+import Navbar from "./components/Navbar";
+import Filter from "./components/Filter";
+import Cards from "./components/Cards";
+import {filterData,apiUrl,reviews} from './data';
+import { toast } from "react-toastify";
+import Spinner from "./components/Spinner";
+import TestiMonial from "./components/TestiMonial";
+
+const App = () => {
+  const [courses,setCourse]=useState(null);
+  const [loading,setLoading] = useState(true); 
+  const [category,setCategory] = useState(filterData[0].title);
+  async function fetchData(){
+    setLoading(true);
+      try{
+          const res= await fetch(apiUrl);
+          const output= await res.json();
+          setCourse(output.data);
+
+      }
+      catch(e){
+        toast.error("something went wrong")
+      }
+      setLoading(false);
+  }
+  useEffect(()=>{
+   
+    fetchData();
+      
+  },[])
+  return (
+    <div className="min-h-screen min-w-fit flex flex-col bg-bgDark2">
+      <Navbar/>
+      <div >
+      <Filter filterData={filterData}
+        category={category}
+        setCategory={setCategory}
+      />
+      <div className="w-11/12 max-w-[1200px] mx-auto flex flex-wrap justify-center items-center min-h-[50vh]"> 
+        {
+          loading? <Spinner/>:<Cards courses={courses}
+          category={category}   
+          />
+        }
+      </div>
+      </div>
+
+    <div className="min-w-screen   h-fit min-h-screen bg-slate-300 flex flex-col justify-center items-center  ">
+    <div className=" h-1/2 w-[40%] min-w-[220px] text-center  ">
+      <h1 className=" font-bold text-4xl">Our Testimonials</h1>
+      <div className="h-[4px] w-1/5 bg-violet-400 mx-auto mt-1 mb-7"></div>
+      <TestiMonial  reviews={reviews} />
+      
+    </div>
+      </div>
+    </div>
+  );
+};
+
+export default App;
